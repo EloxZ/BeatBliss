@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Navbar from "./Navbar"
 import Sidebar from "./Sidebar"
 import { isPhoneMediaQuery } from "@/utils/utils"
@@ -8,17 +8,17 @@ import { RecoilRoot } from "recoil";
 import Player from "@/components/songs/Player";
 
 export default function Layout({children}: {children: React.ReactNode}) {
-    let myWindow: Window | undefined
-    if (typeof window !== "undefined") {
-        myWindow = window
-    }
-    const [isOpen, setIsOpen] = useState(!isPhoneMediaQuery(myWindow))
+    const [isOpen, setIsOpen] = useState(true)
 
     const handleClose = () => {
-        if (isPhoneMediaQuery(myWindow)) {
-          setIsOpen(false);
+        if (isPhoneMediaQuery(window)) {
+            setIsOpen(false);
         }
-    };
+    }
+
+    useEffect(() => {
+        handleClose()
+    }, [])
 
     return <RecoilRoot>
         <Navbar isOpen={isOpen} setIsOpen={setIsOpen}/>

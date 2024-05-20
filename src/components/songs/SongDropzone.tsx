@@ -74,7 +74,7 @@ export default function SongDropzone() {
             <section>
                 <div className='border-2 border-dashed border-gray-300 p-16 text-center rounded-sm' {...getRootProps()}>
                     <input {...getInputProps()} />
-                    <p>Drag 'n' drop your songs here, or click to select files</p>
+                    <p>Drag &apos;n&apos; drop your songs here, or click to select files</p>
                     <p className={'h-4 ' + (error ? 'text-red-300' : 'text-green-300')}>{msg}</p>
                 </div>
             </section>

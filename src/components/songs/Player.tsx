@@ -24,12 +24,12 @@ export default function Player() {
     }
 
     useEffect(() => {
-        window.addEventListener('keydown', handleKeyDown);
+        window.addEventListener('keydown', handleKeyDown)
 
         return () => {
-            window.removeEventListener('keydown', handleKeyDown);
-        };
-    }, [player.playing]);
+            window.removeEventListener('keydown', handleKeyDown)
+        }
+    }, [player.playing])
 
     const currentTimeDisplayed = selectedTime ?? (Math.floor(player?.currentTime ?? 0))
 

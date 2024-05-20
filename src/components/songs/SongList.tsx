@@ -30,7 +30,7 @@ export default function SongList() {
         </TableHeader>
         <TableBody>
             {songs?.map((song) => (
-                <TableRow className={"group " + (player?.song?.id === song.id ? "bg-muted" : "") }>
+                <TableRow key={song.id} className={"group " + (player?.song?.id === song.id ? "bg-muted" : "") }>
                     <TableCell>{song.title}</TableCell>
                     <TableCell>{song.artist}</TableCell>
                     <TableCell>{secondsToMinSec(song.duration ?? 0)}</TableCell>

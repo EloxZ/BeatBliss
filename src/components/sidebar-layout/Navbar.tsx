@@ -1,4 +1,5 @@
 
+import Image from "next/image"
 
 export default function Navbar({
     isOpen,
@@ -18,7 +19,7 @@ export default function Navbar({
                         </svg>
                     </button>
                     <div className="flex ms-2 md:me-24">
-                        <img src="/static/img/logo.svg" className="h-8 me-3" alt="BeatBliss Logo" />
+                        <Image src="/static/img/logo.svg" className="h-8 me-3" alt="BeatBliss Logo" width={32} height={32}/>
                         <span className="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white">BeatBliss</span>
                     </div>
                 </div>
