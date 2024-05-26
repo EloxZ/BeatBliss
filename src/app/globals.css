@@ -63,6 +63,10 @@ body {
   }
 }
 
+*{
+  -moz-user-select: none;
+}
+
 .dropdown-transition {
   transition-property: max-height, padding;
 }

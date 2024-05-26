@@ -17,8 +17,31 @@ const secondsToMinSec = (seconds: number) => {
     return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
 }
 
+const range = (x: number, y: number): number[] => {
+    let numbers = []
+    if (x < y) {
+        for (let i = x; i < y; i++) {
+            numbers.push(i)
+        }
+    } else {
+        for (let i = x; i > y; i--) {
+            numbers.push(i)
+        }
+    }
+    return numbers;
+}
+
+const toastCloseAction = {
+    action: {
+      label: 'Close',
+      onClick: () => {}
+    }
+}
+
 export {
     isPhoneMediaQuery,
     isValidAudioFormat,
-    secondsToMinSec
+    secondsToMinSec,
+    toastCloseAction,
+    range
 }

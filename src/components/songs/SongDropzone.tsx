@@ -4,10 +4,10 @@ import { isValidAudioFormat } from '@/utils/utils'
 import Dropzone from 'react-dropzone'
 import { useState } from 'react'
 import { db, Song } from '@/features/db.model'
+import { toast } from "sonner"
+import { toastCloseAction } from '@/utils/utils'
 
 export default function SongDropzone() {
-    const [msg, setMsg] = useState("")
-    const [error, setError] = useState(false)
     const onSongsDrop = (songFiles: File[]) => {
         let successNumber = 0
         for (const songFile of songFiles) {
@@ -55,16 +55,13 @@ export default function SongDropzone() {
 
                     if (success) {
                         successNumber += 1
-                        setMsg(`File uploaded correctly (${successNumber}/${songFiles.length})`)
-                        setError(false)
+                        toast.success(`File uploaded correctly (${successNumber}/${songFiles.length})`, toastCloseAction)
                     } else {
-                        setMsg("There was an error uploading the file")
-                        setError(true)
+                        toast.error(`There was an error uploading the file`, toastCloseAction)
                     }
                 }
             } else {
-                setMsg("The selected file must be an audio file")
-                setError(true)
+                toast.error(`The selected file must be an audio file`, toastCloseAction)
             }
         }
     }
@@ -75,7 +72,6 @@ export default function SongDropzone() {
                 <div className='border-2 border-dashed border-gray-300 p-16 text-center rounded-sm' {...getRootProps()}>
                     <input {...getInputProps()} />
                     <p>Drag &apos;n&apos; drop your songs here, or click to select files</p>
-                    <p className={'h-4 ' + (error ? 'text-red-300' : 'text-green-300')}>{msg}</p>
                 </div>
             </section>
         )}
