@@ -12,16 +12,16 @@ import RepeatButton from "./RepeatButton"
 import ShuffleButton from "./ShuffleButton"
 
 export default function Player() {
-    const [player, 
+    const {
+        player, 
         setSong, 
         setTime, 
-        setVolume, 
-        setPlaylistSongs, 
+        setVolume,
         setShuffle, 
         setRepeat, 
         playNextSong, 
         playPrevSong
-    ] = usePlayer()
+    } = usePlayer()
     const [selectedTime, setSelectedTime] = useState<number | null>(null)
     const [displayedVolume, setDisplayedVolume] = useState<number>(0)
 
@@ -56,7 +56,7 @@ export default function Player() {
 
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
-            if (event.code === "Space" || event.code === "MediaPlayPause") {
+            if (event.code === "MediaPlayPause") {
                 event.preventDefault()
                 handlePlayButton()
             }

@@ -3,6 +3,17 @@
 
 import { useRef, useEffect, Children } from "react"
 
+interface SidebarDropdownProps {
+    children: React.ReactNode
+    className?: string
+    text?: string
+    icon?: React.ReactNode
+    onContextMenu?: (event: any) => void
+    onClickEmpty?: () => void
+    isOpen: boolean
+    setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
+}
+
 export default function SidebarDropdown({
     children,
     className,
@@ -12,31 +23,22 @@ export default function SidebarDropdown({
     onClickEmpty,
     isOpen,
     setIsOpen,
-}: {
-    children: React.ReactNode, 
-    className?: string, 
-    text?: string, 
-    icon?: React.ReactNode,
-    onContextMenu?: (event: any) => void,
-    onClickEmpty?: () => void,
-    isOpen: boolean,
-    setIsOpen: React.Dispatch<React.SetStateAction<boolean>>, 
-}) {
+}: SidebarDropdownProps) {
     const listRef = useRef<HTMLUListElement>(null)
     const isEmpty = Children.count(children) === 0
 
     useEffect(() => {
         if (isOpen) {
             setTimeout(() => {
-              if (listRef.current) {
-                listRef.current.style.overflow = 'scroll'
-              }
+                if (listRef.current) {
+                    listRef.current.style.overflow = 'scroll'
+                }
             }, 200);
-          } else {
+        } else {
             if (listRef.current) {
-              listRef.current.style.overflow = ''
+                listRef.current.style.overflow = ''
             }
-          }
+        }
     }, [isOpen])
 
     return <li>

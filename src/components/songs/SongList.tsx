@@ -8,23 +8,38 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-
-import { Menu, Item, Separator, Submenu, useContextMenu } from 'react-contexify';
+import { Menu, Item, Separator, useContextMenu } from "react-contexify"
 import '@/app/context-menu.css'
 import { db } from "@/features/db.model"
 import { useLiveQuery } from "dexie-react-hooks"
 import { range, secondsToMinSec } from "@/utils/utils"
-import PlayButton from "./PlayButton"
+import PlayButton from "@/components/player/PlayButton"
 import { usePlayer } from "@/features/player"
-import { useState, useRef, useEffect } from "react"
+import { useState, useEffect } from "react"
 import { toast } from "sonner"
-import { toastCloseAction } from '@/utils/utils'
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogFooter,
+} from "@/components/ui/dialog"
+import { toastCloseAction } from "@/utils/utils"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
 
 let timeOfClick = 0
 
 export default function SongList() {
-    const [player, setSong, setTime, setVolume, setPlaylistSongs, setShuffle, setRepeat] = usePlayer()
+    const playlists = useLiveQuery(() => db.playlist.toArray())
+    const {player, setSong, setPlaylistSongs} = usePlayer()
     const [selectedRows, setSelectedRows] = useState<number[]>([])
+    const [editSongDialog, setEditSongDialog] = useState({
+        id: 0,
+        title: "",
+        artist: "",
+        open: false,
+    })
     const songs = useLiveQuery(() => db.song.toArray())
     const { show } = useContextMenu({
         id: 'cm-row',
@@ -41,7 +56,7 @@ export default function SongList() {
         })
     }
 
-    const handleDelete = ({ id, event }: any) => {
+    const handleDeleteSong = ({ id, event }: any) => {
         for (const selectedRow of selectedRows) {
             const song = songs?.at(selectedRow)
             if (song) {
@@ -93,6 +108,29 @@ export default function SongList() {
         }
     }
 
+    const handleEditSong = () => {
+        const song = songs?.at(selectedRows[0])
+        if (song) {
+            setEditSongDialog({
+                id: song.id!,
+                title: song.title,
+                artist: song.artist,
+                open: true
+            })
+        }
+    }
+
+    const confirmEditSong = () => {
+        db.song.update(editSongDialog.id, {
+            title: editSongDialog.title,
+            artist: editSongDialog.artist
+        })
+        setEditSongDialog({
+            ...editSongDialog,
+            open: false
+        })
+    }
+
     useEffect(() => {
         if (songs && songs !== player.playlistSongs) {
             setPlaylistSongs(songs)
@@ -101,10 +139,47 @@ export default function SongList() {
 
     return <>
         <Menu id="cm-row">
-            {(selectedRows.length === 1)? <Item id="edit" onClick={() => {}}>Edit</Item> : null}
+            {(selectedRows.length === 1)? <Item id="edit" onClick={() => handleEditSong()}>Edit</Item> : null}
             {(selectedRows.length === 1)? <Separator /> : null}
-            <Item id="delete" onClick={handleDelete}>Delete</Item>
+            <Item id="delete" className="delete-item" onClick={handleDeleteSong}>Delete</Item>
         </Menu>
+        <Dialog 
+            open={editSongDialog.open} 
+            onOpenChange={(value) => setEditSongDialog({...editSongDialog, open: value})}
+        >
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Edit Playlist</DialogTitle>
+                </DialogHeader>
+                <fieldset className="flex gap-4 items-center mt-4">
+                    <label className="Label" htmlFor="title">
+                        Title
+                    </label>
+                    <Input 
+                        className="Input" 
+                        id="title" 
+                        value={editSongDialog.title} 
+                        onKeyDown={(event: any) => event.key === "Enter" && confirmEditSong()}
+                        onChange={(event: any) => setEditSongDialog({...editSongDialog, title: event.target.value})} 
+                    />
+                </fieldset>
+                <fieldset className="flex gap-4 items-center mb-4">
+                    <label className="Label" htmlFor="artist">
+                        Artist
+                    </label>
+                    <Input 
+                        className="Input" 
+                        id="artist" 
+                        value={editSongDialog.artist} 
+                        onKeyDown={(event: any) => event.key === "Enter" && confirmEditSong()}
+                        onChange={(event: any) => setEditSongDialog({...editSongDialog, artist: event.target.value})} 
+                    />
+                </fieldset>
+                <DialogFooter>
+                    <Button onClick={confirmEditSong}>Save</Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
         <Table>
             <TableHeader className="bg-card">
                 <TableRow>

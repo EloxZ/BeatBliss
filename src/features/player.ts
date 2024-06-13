@@ -47,16 +47,19 @@ const playerState = atom({
     } as PlayerState,
 })
 
-const usePlayer = (): [
-    PlayerState, (song: Song) => void, 
-    (time: number) => void, 
-    (volume: number) => void, 
-    (playlistSongs: Song[]) => void, 
-    (shuffle: boolean) => void, 
-    (repeat: boolean) => void,
-    () => void,
-    () => void
-] => {
+interface Player {
+    player: PlayerState,
+    setSong: (song: Song) => void,
+    setTime: (time: number) => void,
+    setVolume: (volume: number) => void,
+    setPlaylistSongs: (playlistSongs: Song[]) => void,
+    setShuffle: (shuffle: boolean) => void,
+    setRepeat: (repeat: boolean) => void,
+    playNextSong: () => void,
+    playPrevSong: () => void
+}
+
+const usePlayer = (): Player => {
     const [player, setPlayer] = useRecoilState(playerState)
 
     const updateCurrentTime = () => {
@@ -224,7 +227,7 @@ const usePlayer = (): [
         }))
     }
 
-    return [
+    return {
         player, 
         setSong, 
         setTime, 
@@ -234,7 +237,7 @@ const usePlayer = (): [
         setRepeat, 
         playNextSong, 
         playPrevSong
-    ]
+    }
 }
 
 export {
