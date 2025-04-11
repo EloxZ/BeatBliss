@@ -49,6 +49,7 @@ const playerState = atom({
 
 interface Player {
     player: PlayerState,
+    togglePlay: () => void,
     setSong: (song: Song) => void,
     setTime: (time: number) => void,
     setVolume: (volume: number) => void,
@@ -80,11 +81,25 @@ const usePlayer = (): Player => {
         timeEvent = setInterval(updateCurrentTime, 1000)
     }
 
+    const togglePlay = () => {
+        if (songAudio) {
+            if (player.playing) {
+                songAudio.pause()
+            } else {
+                songAudio.play()
+            }
+            setPlayer(prevPlayer => ({
+                ...prevPlayer,
+                playing: !player.playing
+            }))
+        }
+    }
+
     const getNextSong = (player: PlayerState): Song | undefined => {
         let nextSong = undefined
         if (player.song) {
             nextSong = player.song
-            if (!player.repeat && player.playlistSongs.length > 0) {
+            if (!player.repeat && player.playlistSongs.length > 1) {
                 if (player.shuffle && player.playlistSongs.length > 1) {
                     while (player.song.id === nextSong.id) {
                         const randomIndex = Math.floor(Math.random() * player.playlistSongs.length)
@@ -133,54 +148,41 @@ const usePlayer = (): Player => {
 
     const setSong = (song: Song, isPrevious = false, isRepeat = false) => {
         if (song) {
-            if (song.id !== player.song?.id || isRepeat) {
-                setPlayer(prevPlayer => {
-                    let newPrevSongs = prevPlayer.prevSongs ?? []
-                    if (prevPlayer.song && !isPrevious) {
-                        newPrevSongs = newPrevSongs.slice(-(PREV_SONGS_BUFFER_SIZE-1))
-                        if (!isRepeat) {
-                            newPrevSongs.push(prevPlayer.song)
-                        }
-                    } else if (isPrevious) {
-                        newPrevSongs = newPrevSongs.slice(0, newPrevSongs.length-1)
+            setPlayer(prevPlayer => {
+                let newPrevSongs = prevPlayer.prevSongs ?? []
+                if (prevPlayer.song && !isPrevious) {
+                    newPrevSongs = newPrevSongs.slice(-(PREV_SONGS_BUFFER_SIZE-1))
+                    if (!isRepeat) {
+                        newPrevSongs.push(prevPlayer.song)
                     }
-
-                    return {
-                        ...prevPlayer,
-                        song: song,
-                        prevSongs: newPrevSongs,
-                        playing: true,
-                        currentTime: 0
-                    }
-                })
-
-                if (songAudio) {
-                    songAudio.pause()
-                    songAudio.src = song.data
-                    songAudio.currentTime = 0
-                    songAudio.volume = player.volume
-                    songAudio.oncanplaythrough = () => {
-                        songAudio.play().catch(error => {
-                            if (error.name === 'AbortError') {
-                                console.error('Playback was aborted.');
-                            } else {
-                                console.error('Error playing audio:', error);
-                            }
-                        })
-                    }
-                    songAudio.load()
+                } else if (isPrevious) {
+                    newPrevSongs = newPrevSongs.slice(0, newPrevSongs.length-1)
                 }
-            } else {
-                if (player.playing) {
-                    songAudio?.pause()
-                } else {
-                    songAudio?.play()
-                }
-    
-                setPlayer(prevPlayer => ({
+
+                return {
                     ...prevPlayer,
-                    playing: !player.playing
-                }))
+                    song: song,
+                    prevSongs: newPrevSongs,
+                    playing: true,
+                    currentTime: 0
+                }
+            })
+
+            if (songAudio) {
+                songAudio.pause()
+                songAudio.src = song.data
+                songAudio.currentTime = 0
+                songAudio.volume = player.volume
+                songAudio.oncanplaythrough = () => {
+                    songAudio.play().catch(error => {
+                        if (error.name === 'AbortError') {
+                            console.error('Playback was aborted.');
+                        } else {
+                            console.error('Error playing audio:', error);
+                        }
+                    })
+                }
+                songAudio.load()
             }
         }
     }
@@ -228,7 +230,8 @@ const usePlayer = (): Player => {
     }
 
     return {
-        player, 
+        player,
+        togglePlay,
         setSong, 
         setTime, 
         setVolume, 

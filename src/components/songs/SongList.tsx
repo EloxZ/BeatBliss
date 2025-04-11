@@ -32,7 +32,7 @@ let timeOfClick = 0
 
 export default function SongList() {
     const playlists = useLiveQuery(() => db.playlist.toArray())
-    const {player, setSong, setPlaylistSongs} = usePlayer()
+    const {player, togglePlay, setSong, setPlaylistSongs} = usePlayer()
     const [selectedRows, setSelectedRows] = useState<number[]>([])
     const [editSongDialog, setEditSongDialog] = useState({
         id: 0,
@@ -209,7 +209,7 @@ export default function SongList() {
                                 <PlayButton 
                                     playing={player?.song?.id === song.id && player?.playing} 
                                     small 
-                                    onClick={() => {setSong(song)}}
+                                    onClick={() => {player?.song?.id === song.id ? togglePlay() : setSong(song)}}
                                 />
                             </div>
                         </TableCell>

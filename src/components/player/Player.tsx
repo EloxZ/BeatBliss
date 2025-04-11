@@ -13,7 +13,8 @@ import ShuffleButton from "./ShuffleButton"
 
 export default function Player() {
     const {
-        player, 
+        player,
+        togglePlay,
         setSong, 
         setTime, 
         setVolume,
@@ -27,7 +28,7 @@ export default function Player() {
 
     const handlePlayButton = () => {        
         if (player?.song) {
-            setSong(player.song)
+            togglePlay()
         }
     }
 
